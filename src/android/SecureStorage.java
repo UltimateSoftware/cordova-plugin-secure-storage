@@ -30,7 +30,6 @@ public class SecureStorage extends CordovaPlugin {
     private static final String MSG_NOT_SUPPORTED = "API 19 (Android 4.4 KitKat) is required. This device is running API " + Build.VERSION.SDK_INT;
     private static final String MSG_DEVICE_NOT_SECURE = "Device is not secure";
 
-    private Config configs;
     private Hashtable<String, SharedPreferencesHandler> SERVICE_STORAGE = new Hashtable<>();
     private String INIT_SERVICE;
     private volatile CallbackContext initContext, secureDeviceContext;
@@ -38,8 +37,6 @@ public class SecureStorage extends CordovaPlugin {
 
     @Override
     public void onResume(boolean multitasking) {
-        configs = Config.getInstance(getContext());
-
         if (secureDeviceContext != null) {
             if (isDeviceSecure()) {
                 secureDeviceContext.success();
@@ -62,7 +59,8 @@ public class SecureStorage extends CordovaPlugin {
                             if (USE_LEGACY) {
                                 RSA.createKeyPairLegacy(getContext(), alias);
                             } else {
-                                RSA.createKeyPair(getContext(), alias, configs.getSecureHardwareOnly());
+                                boolean secureHardwareOnly = Config.getInstance(getContext()).getSecureHardwareOnly();
+                                RSA.createKeyPair(getContext(), alias, secureHardwareOnly);
                             }
                         }
                         initSuccess(initContext);
@@ -80,8 +78,10 @@ public class SecureStorage extends CordovaPlugin {
 
     @TargetApi(18)
     private boolean isDeviceSecure() {
+        boolean secureHardwareOnly = Config.getInstance(getContext()).getSecureHardwareOnly();
         boolean isSecureDevice = true;
         KeyguardManager keyguardManager = (KeyguardManager)(getContext().getSystemService(Context.KEYGUARD_SERVICE));
+
         try {
             Method isSecure = keyguardManager.getClass().getMethod("isDeviceSecure");
             isSecureDevice = isSecureDevice && ((Boolean) isSecure.invoke(keyguardManager)).booleanValue();
@@ -89,7 +89,7 @@ public class SecureStorage extends CordovaPlugin {
             isSecureDevice = isSecureDevice && keyguardManager.isKeyguardSecure();
         }
 
-        if (USE_LEGACY && configs.getSecureHardwareOnly()) {
+        if (USE_LEGACY && secureHardwareOnly) {
             isSecureDevice = isSecureDevice && KeyChain.isBoundKeyAlgorithm(KeyProperties.KEY_ALGORITHM_RSA);
         }
 
@@ -98,9 +98,7 @@ public class SecureStorage extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
-        configs = Config.getInstance(getContext());
-
-        if (!SUPPORTED){
+        if (!SUPPORTED) {
             Log.w(TAG, MSG_NOT_SUPPORTED);
             callbackContext.error(MSG_NOT_SUPPORTED);
             return false;

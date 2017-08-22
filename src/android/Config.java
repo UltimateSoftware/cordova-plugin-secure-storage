@@ -28,10 +28,9 @@ public class Config {
 	}
 
 	public static Config getInstance(Context context) {
-		Resources res = context.getResources();
-		int configXmlResourceId = context.getResources().getIdentifier("config", "xml", context.getPackageName());
-
 		if (instance == null) {
+			Resources res = context.getResources();
+			int configXmlResourceId = context.getResources().getIdentifier("config", "xml", context.getPackageName());
 			instance = new Config(res, configXmlResourceId);
 		}
 
@@ -75,8 +74,8 @@ public class Config {
 			return null;
 		}
 
-		for (String realKey : supportedPrefKeys){
-			if (realKey.equalsIgnoreCase(testKey)){
+		for (String realKey : supportedPrefKeys) {
+			if (realKey.equalsIgnoreCase(testKey)) {
 				return realKey;
 			}
 		}
