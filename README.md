@@ -186,6 +186,18 @@ Changing the lock screen type on Android erases the keystore (issues [61989](htt
 
 This means that any values saved using the plugin could be lost if the user changes security settings. The plugin should therefore be used as a secure credential cache and not persistent storage on Android.
 
+##### Configuration
+On Android it is possible to configure the security settings of Secure Storage:
+ * SecureStorageHardwareOnly - initialize Secure Storage if and only if Keys are created in Hardware-backed Secure Storage, otherwise, throw an error
+
+For example, include in your ``config.xml`` the following:
+
+```xml
+    <platform name="android">
+        <preference name="SecureStorageHardwareOnly" value="true"/>
+    </platform>
+```
+
 #### Windows
 Windows implementation is based on [PasswordVault](https://msdn.microsoft.com/en-us/library/windows/apps/windows.security.credentials.passwordvault.aspx) object from the [Windows.Security.Credentials](https://msdn.microsoft.com/en-us/library/windows/apps/windows.security.credentials.aspx) namespace.
 The contents of the locker are specific to the app so different apps and services don't have access to credentials associated with other apps or services.
