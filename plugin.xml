@@ -58,6 +58,7 @@
         <source-file src="src/android/RSA.java" target-dir="src/com/crypho/plugins/" />
         <source-file src="src/android/AES.java" target-dir="src/com/crypho/plugins/" />
         <source-file src="src/android/SharedPreferencesHandler.java" target-dir="src/com/crypho/plugins/" />
+        <source-file src="src/android/Config.java" target-dir="src/com/crypho/plugins/" />
     </platform>
 
     <platform name="browser">
